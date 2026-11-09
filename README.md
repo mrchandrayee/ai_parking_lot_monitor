@@ -1,5 +1,7 @@
 # AI Parking Lot Monitor
 
+![AI Parking Lot Monitor](ai_parking_lot_monitor.png)
+
 **Know which parking slots are free — in real time, from any camera.**
 
 Connect a CCTV feed or webcam, define your parking bays once in a config file, and this system instantly tells you which slots are **FREE** and which are **OCCUPIED** — live, on screen, every second. Built with [YOLOv11](https://docs.ultralytics.com/) and OpenCV.
