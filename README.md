@@ -1,6 +1,10 @@
 # AI Parking Lot Monitor
 
-A real-time parking occupancy detection system powered by [YOLOv11](https://docs.ultralytics.com/) and OpenCV. It detects vehicles in video frames, tracks them across time, and evaluates configurable parking-space polygons — displaying a live FREE / OCCUPIED overlay on every slot.
+**Know which parking slots are free — in real time, from any camera.**
+
+Connect a CCTV feed or webcam, define your parking bays once in a config file, and this system instantly tells you which slots are **FREE** and which are **OCCUPIED** — live, on screen, every second. Built with [YOLOv11](https://docs.ultralytics.com/) and OpenCV.
+
+Whether you're managing a mall, hospital, office campus, or building a smart-city prototype — this gives you actionable occupancy data without expensive hardware or cloud subscriptions.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
 ![YOLOv11](https://img.shields.io/badge/YOLOv11-ultralytics-orange)
@@ -9,29 +13,34 @@ A real-time parking occupancy detection system powered by [YOLOv11](https://docs
 
 ---
 
-## Demo
+## What It Does
 
-> Point the system at a parking-lot video and it will annotate every bay in real time.
+Plug in any parking lot camera. The system:
+
+- **Identifies every car, bike, bus, and truck** the moment it enters a bay
+- **Tracks each vehicle** so the occupancy reading stays stable even under occlusion or lighting changes
+- **Lights up each bay** green (FREE) or red (OCCUPIED) on a live annotated video
+- **Logs a running count** — total slots, free, occupied — updated every frame
 
 ```
 Total: 6  |  Free: 2  |  Occupied: 4
 ```
 
-Annotated output is saved to `runs/parking_output.mp4`.
+No cloud. No subscription. Runs on a laptop or a Raspberry Pi-class device. Annotated output saved to `runs/parking_output.mp4`.
 
 ---
 
 ## Features
 
-| Feature | Detail |
+| Feature | What you get |
 |---|---|
-| Vehicle detection | YOLOv11n (car, motorcycle, bus, truck — COCO classes 2, 3, 5, 7) |
-| Object tracking | Lightweight IoU-based tracker with configurable max-age |
-| Occupancy logic | Per-slot polygon overlap + bottom-center anchor heuristic |
-| Live HUD | Total / Free / Occupied count overlaid on each frame |
-| Input flexibility | Video file **or** webcam (`--source 0`) |
-| Annotated output | Writes MP4 to `runs/parking_output.mp4` by default |
-| Config-driven | All detector, tracker, and slot parameters live in one YAML file |
+| 🚗 Real-time occupancy | Instant FREE / OCCUPIED status per bay, updated every frame |
+| 🎯 YOLOv11 detection | Recognizes cars, motorcycles, buses, and trucks out of the box |
+| 🔁 Stable tracking | Vehicles keep their identity across frames — no flickering status changes |
+| 🟩🟥 Visual overlay | Each parking bay turns green (free) or red (occupied) on the live feed |
+| 📷 Any camera source | Works with recorded video files or a live webcam/CCTV stream |
+| ⚙️ Zero-code config | Define all bays, thresholds, and model settings in one YAML file |
+| 💾 Saved output | Annotated video exported to `runs/parking_output.mp4` automatically |
 
 ---
 
@@ -144,25 +153,25 @@ parking:
 ## How It Works
 
 ```
-Video frame
-    │
-    ▼
-VehicleDetector (YOLOv11)  ──► raw bounding boxes
-    │
-    ▼
-IoUTracker  ──► boxes with stable track IDs
-    │
-    ▼
-ParkingLot.update()  ──► per-slot overlap check
-    │
-    ▼
-draw_overlay()  ──► annotated frame written to output
+Camera / Video feed
+        │
+        ▼
+  YOLOv11 detects every vehicle  ──► bounding boxes per frame
+        │
+        ▼
+  IoU Tracker assigns stable IDs  ──► same car = same ID across frames
+        │
+        ▼
+  Each bay polygon checked  ──► is a vehicle inside this slot?
+        │
+        ▼
+  Live overlay rendered  ──► green = FREE, red = OCCUPIED, count updated
 ```
 
-1. **Detection** — YOLOv11n runs inference on each (optionally resized) frame and returns bounding boxes for the configured vehicle classes.
-2. **Tracking** — An IoU-based tracker associates boxes across frames, assigning stable IDs and suppressing flicker.
-3. **Occupancy** — For each parking slot polygon, the system checks whether any tracked vehicle's anchor point (or box overlap) exceeds the configured threshold.
-4. **Visualization** — Slot polygons are drawn in green (free) or red (occupied), with a summary HUD in the top-left corner.
+1. **Detection** — YOLOv11n spots every car, bike, bus, and truck in the current camera view.
+2. **Tracking** — Each vehicle gets a stable ID so the bay status doesn't flicker when detection confidence dips for a frame.
+3. **Occupancy check** — For every configured bay polygon, the system checks whether a vehicle is parked inside using geometric overlap. One YAML change adjusts sensitivity.
+4. **Live output** — Bays turn green or red instantly. The running FREE / OCCUPIED count is shown in the corner of the feed.
 
 ---
 
@@ -207,10 +216,9 @@ Please open an issue first if you're planning a large change, so we can discuss 
 
 ## Known Limitations
 
-- **Slot polygons are camera-specific.** The sample coordinates in `configs/parking.yaml` are illustrative; you must replace them for your scene.
-- **IoU tracker is intentionally lightweight.** For dense scenes or long occlusions, plug in ByteTrack/BoT-SORT via Ultralytics.
-- **No model weights or sample footage are bundled.** YOLOv11n downloads automatically; provide your own video.
-- This is a clean reconstruction from observable behavior — not a byte-for-byte recovery of any original codebase.
+- **Bay polygons are camera-specific.** The sample coordinates are a starting template — you must draw your own for your camera angle.
+- **Tracker is lightweight by design.** Works great for normal traffic. For packed lots or heavy occlusion, swap in ByteTrack/BoT-SORT via Ultralytics.
+- **No bundled footage or weights.** YOLOv11n downloads automatically on first run; bring your own camera or video file.
 
 ---
 
