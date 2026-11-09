@@ -1,0 +1,30 @@
+video:
+  source: "input.mp4"        # use 0 for webcam
+  output: "runs/parking_output.mp4"
+  show: true
+  resize_width: 960
+
+detector:
+  model: "yolo11n.pt"        # downloads automatically on first run
+  confidence: 0.28
+  iou: 0.50
+  # COCO vehicle classes: car=2, motorcycle=3, bus=5, truck=7
+  classes: [2, 3, 5, 7]
+
+tracking:
+  enabled: true
+  max_age: 18
+  match_iou: 0.20
+
+parking:
+  occupancy_threshold: 0.18
+  anchor: "bottom_center"    # bottom_center or center
+  # Coordinates are NORMALIZED (0..1) against the input frame.
+  # Replace these example polygons with the actual slot corners in your camera view.
+  slots:
+    - {id: "P01", polygon: [[0.05, 0.55], [0.17, 0.55], [0.17, 0.93], [0.05, 0.93]]}
+    - {id: "P02", polygon: [[0.19, 0.55], [0.31, 0.55], [0.31, 0.93], [0.19, 0.93]]}
+    - {id: "P03", polygon: [[0.33, 0.55], [0.45, 0.55], [0.45, 0.93], [0.33, 0.93]]}
+    - {id: "P04", polygon: [[0.47, 0.55], [0.59, 0.55], [0.59, 0.93], [0.47, 0.93]]}
+    - {id: "P05", polygon: [[0.61, 0.55], [0.73, 0.55], [0.73, 0.93], [0.61, 0.93]]}
+    - {id: "P06", polygon: [[0.75, 0.55], [0.87, 0.55], [0.87, 0.93], [0.75, 0.93]]}
